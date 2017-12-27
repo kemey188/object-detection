@@ -23,13 +23,12 @@ import os
 ap = argparse.ArgumentParser()
 ap.add_argument("-d", "--dataset", required = True)
 ap.add_argument("-m", "--model", required = True)
-ap.add_argument("-p", "--plot", type=str, default="plot.png")
+ap.add_argument("-p", "--plot", type=str, default="metrics.png")
 args = vars(ap.parse_args())
 
 #初始化参数
 EPOCHS  = 25
 INIT_LR = 1e-3
-#BATCH_SIZE = 32
 BATCH_SIZE = 3
 
 #初始化data和labels
