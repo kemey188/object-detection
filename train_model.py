@@ -4,6 +4,7 @@
 train_model.py
 """
 
+import logging
 import matplotlib
 matplotlib.use("Agg")
 
@@ -20,6 +21,13 @@ import random
 import cv2
 import os
 
+logger = logging.getLogger()
+handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
 ap = argparse.ArgumentParser()
 ap.add_argument("-d", "--dataset", required = True)
 ap.add_argument("-m", "--model", required = True)
@@ -32,7 +40,7 @@ INIT_LR = 1e-3
 BATCH_SIZE = 3
 
 #初始化data和labels
-print "[INFO] loading images..."
+logging.info("loading images...")
 data = []
 labels = []
 
@@ -44,7 +52,7 @@ random.shuffle(imagePaths)
 idx = 1
 for imagePath in imagePaths:
     image = cv2.imread(imagePath)
-    print "[%s] read done %d" % (imagePath, idx)
+    logging.info("[%s] read done %d", imagePath, idx)
     image = cv2.resize(image, (28,28))
     idx += 1
     image = img_to_array(image)
@@ -73,7 +81,7 @@ aug = ImageDataGenerator(rotation_range=30, width_shift_range=.1, height_shift_r
                         shear_range=.2, zoom_range=.2, horizontal_flip=True, fill_mode="nearest")
 
 # 网络初始化
-print "[INFO] compiling model..."
+logging.info("compiling model...")
 model = LeNet.build(width=28, height=28, depth=3, classes=2)
 opt = Adam(lr=INIT_LR, decay=INIT_LR/EPOCHS)
 model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
@@ -86,14 +94,14 @@ model.compile(optimizer='rmsprop',
 """
 
 # 训练
-print "[INFO] training network..."
+logging.info("training network...")
 H = model.fit_generator(aug.flow(train_X, train_Y, batch_size=BATCH_SIZE),
                         validation_data=(test_X, test_Y),
                         steps_per_epoch=len(train_X) // BATCH_SIZE,
                         epochs=EPOCHS,
                         verbose=1)
 
-print "[INFO] serializing network..."
+logging.info("serializing network...")
 model.save(args["model"])
 
 # 输出metrics
