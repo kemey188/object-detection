@@ -2,12 +2,20 @@
 test_model.py
 """
 
+import logging
 from keras.preprocessing.image import img_to_array
 from keras.models import load_model
 import numpy as np
 import argparse
 import imutils
 import cv2
+
+logger = logging.getLogger()
+handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", required = True)
@@ -24,7 +32,7 @@ image = img_to_array(image)
 image = np.expand_dims(image, axis=0)
 
 # load the trained cnn model
-print "[INFO] loading network..."
+logging.info("loading network...")
 model = load_model(args["model"])
 
 # do classification
